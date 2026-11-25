@@ -1,0 +1,57 @@
+using System;
+using System.Windows.Forms;
+using Corel.Interop.VGCore;
+
+namespace CorelHalftoneTools2026
+{
+    public class HalftoneAndImagePlugin
+    {
+        private readonly Application _app;
+
+        public HalftoneAndImagePlugin(Application app)
+        {
+            _app = app ?? throw new ArgumentNullException(nameof(app));
+        }
+
+        // 1. Quitar fondo sin internet (delegar a un motor local offline, ej. ONNX / CLI)
+        public void QuitarFondoOffline(string rutaImagenEntrada, string rutaPngSalida)
+        {
+            if (_app.ActiveDocument == null)
+            {
+                MessageBox.Show("Abre un documento en CorelDRAW primero.");
+                return;
+            }
+
+            // Aquí invocas tu modelo local (ej. proceso local en Python/ONNX) sin conexión a red.
+            // Al obtener el PNG con transparencia, lo importas al documento activo:
+            // _app.ActiveDocument.ActiveLayer.Import(rutaPngSalida);
+            MessageBox.Show($"Preparado para procesar sin internet:\n{rutaImagenEntrada} -> {rutaPngSalida}");
+        }
+
+        // 2. Vectorizar la imagen seleccionada
+        public void VectorizarSeleccion()
+        {
+            var doc = _app.ActiveDocument;
+            if (doc == null || doc.SelectionRange.Count == 0)
+            {
+                MessageBox.Show("Selecciona un mapa de bits para vectorizar.");
+                return;
+            }
+
+            // En macros/plugins de CorelDRAW se utiliza TraceBitmap sobre el ShapeRange
+            // según el estilo (ej. logotipo, detalle alto, clip art) y luego se reemplaza el mapa de bits.
+            MessageBox.Show("Listo para ejecutar el trazado/vectorización sobre la selección.");
+        }
+
+        // 3. Agrupar y desagrupar objetos/formas por color
+        public void AgruparPorColor()
+        {
+            var doc = _app.ActiveDocument;
+            if (doc == null || doc.ActivePage == null) return;
+
+            // Recorre las formas (Shapes), lee su relleno (Fill) y agrupa por color RGB/CMYK
+            // usando ShapeRange.Group() para agrupar y Ungroup() para desagrupar.
+            MessageBox.Show("Listo para agrupar o desagrupar formas según su color.");
+        }
+    }
+}
